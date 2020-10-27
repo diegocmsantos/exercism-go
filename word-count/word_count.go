@@ -7,14 +7,12 @@ import (
 
 type Frequency map[string]int
 
-const onlyWordsAndNumbers = `(\w)+'?(\w)+|\w`
-const specialCharacters = `[\t\n]`
+var re = regexp.MustCompile(`[\t\n]`)
+var r = regexp.MustCompile(`(\w)+'?(\w)+|\w`)
 
 func WordCount(phrase string) Frequency {
   var freqMap = make(Frequency)
-  var re = regexp.MustCompile(specialCharacters)
   phraseWithNoSpecialCharacters := re.ReplaceAllString(phrase, "")
-  r := regexp.MustCompile(onlyWordsAndNumbers)
   wordsArray := r.FindAllString(phraseWithNoSpecialCharacters, -1)
   for _, word := range wordsArray {
     freqMap[strings.ToLower(word)]++
