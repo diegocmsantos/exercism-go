@@ -6,12 +6,18 @@ import (
 )
 
 var romanSymbols = map[int]string{
-	1: "I",
-	5: "V",
-	10: "X",
-	50: "L",
-	100: "C",
-	500: "D",
+	1:    "I",
+	4:    "IV",
+	5:    "V",
+	9:    "IX",
+	10:   "X",
+	40:   "XL",
+	50:   "L",
+	90:   "XC",
+	100:  "C",
+	400:  "CD",
+	500:  "D",
+	900:  "CM",
 	1000: "M",
 }
 
@@ -22,49 +28,33 @@ func ToRomanNumeral(arabic int) (string, error) {
 		return "", errors.New("arabic number greater than 3000")
 	}
 
-	if arabic < 0 {
+	if arabic <= 0 {
 		return "", errors.New("cannot convert negative numbers")
 	}
 
 	var romanNumber string
-	var quotient int
-	var rest = arabic
-	if rest >= 1000 {
-		quotient += rest / 1000
-		rest = rest % 1000
-		romanNumber += strings.Repeat(romanSymbols[1000], quotient)
-	}
-	if rest >= 500 {
-		quotient += rest / 500
-		rest = rest % 500
-		romanNumber += strings.Repeat(romanSymbols[500], quotient)
-	}
-	if rest >= 100 {
-		quotient += rest / 100
-		rest = rest % 100
-		romanNumber += strings.Repeat(romanSymbols[100], quotient)
-	}
-	if rest >= 10 {
-		quotient += rest / 10
-		rest = rest % 10
-		romanNumber += strings.Repeat(romanSymbols[10], quotient)
-	}
-	if rest >= 4 && rest < 9 {
-		quotient = rest / 5
-		if quotient == 0 {
-			romanNumber += romanSymbols[1] + romanSymbols[5]
-		} else {
-			rest = rest % 5
-			if rest == 0 {
-				romanNumber += romanSymbols[5]
-			} else {
-				romanNumber += strings.Repeat(romanSymbols[5], rest)
-			}
-		}
-	}
-	if rest < 4 {
-		romanNumber += strings.Repeat(romanSymbols[1], rest)
+	var quotient = arabic
+	var rest int
+	for i := 1; quotient > 0; i = i * 10 {
+		quotient = arabic / (i * 10)
+		rest = arabic % (i * 10)
+		romanNumber = translate(rest, i) + romanNumber
 	}
 
 	return romanNumber, nil
+}
+
+func translate(rest, decimal int) string {
+	rest = rest / decimal
+	romanNumber := ""
+	if rest > 0 && rest <= 3 {
+		romanNumber = strings.Repeat(romanSymbols[decimal], rest)
+	} else if rest == 4 {
+		romanNumber = romanSymbols[4*decimal]
+	} else if rest > 4 && rest < 9 {
+		romanNumber = romanSymbols[5*decimal] + strings.Repeat(romanSymbols[decimal], rest%5)
+	} else if rest == 9 {
+		romanNumber = romanSymbols[9*decimal]
+	}
+	return romanNumber
 }
