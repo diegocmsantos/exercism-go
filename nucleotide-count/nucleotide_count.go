@@ -18,11 +18,10 @@ type DNA string
 func (d DNA) Counts() (Histogram, error) {
 	h := Histogram{'A': 0, 'C': 0, 'G': 0, 'T': 0}
 	for _, s := range d {
-		if _, ok := h[s]; ok {
-			h[s]++
-		} else {
-			return h, fmt.Errorf("invalid strand")
+		if _, ok := h[s]; !ok {
+			return nil, fmt.Errorf("invalid nucleotide")
 		}
+		h[s]++
 	}
 	return h, nil
 }
